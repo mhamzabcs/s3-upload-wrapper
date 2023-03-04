@@ -1,8 +1,9 @@
 export interface ConfigOptions {
-  credentials: Credentials;
+  credentials?: Credentials;
   region: string;
   bucketName: string;
   returnOriginalNames?: boolean;
+  s3Client?: any;
 }
 
 interface Credentials {

@@ -19,22 +19,44 @@ $ npm install s3-upload-wrapper
 ## Usage
 
 ```typescript
-import { uploadFiles } from 's3-upload-wrapper/lib';
+import { uploadFiles } from 's3-upload-wrapper';
+import { ConfigOptions } from 's3-upload-wrapper/lib/types';
 
 uploadFiles requires two parameters, ConfigOptions to initialize aws sdk and files array from multer
 
 Use as below:
 
-let configOptions = {
+let configOptions : ConfigOptions = {
     credentials: {
         access_key: 'bucket access key',
         secret_key: 'bucket secret key'
     };
-    region: 'bucket region';
-    bucketName: 'bucket name';
-    returnOriginalNames: false; // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
+    region: 'bucket region',
+    bucketName: 'bucket name',
+    returnOriginalNames: true // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
 }
 
+const urls: string[] = await uploadFiles(configOptions, files); // files is Array<Express.Multer.File> from multer
+console.log(urls[0]) // https://yourbucket.s3.region.amazonaws.com/filename
+
+OR if you would like to initialize your own s3 client, you can pass it to the uploadFiles function as part of ConfigOptions instead of credentials
+
+import { uploadFiles } from 's3-upload-wrapper';
+import { S3Client } from '@aws-sdk/client-s3';
+
+let s3 : S3Client = new S3Client({
+    region: 'bucket region',
+    credentials: {
+        accessKeyId: 'bucket access key',
+        secretAccessKey: 'bucket secret key',
+    },
+});
+let configOptions = {
+    region: 'bucket region',
+    bucketName: 'bucket name',
+    s3Client: s3,
+    returnOriginalNames: true; // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
+};
 const urls: string[] = await uploadFiles(configOptions, files); // files is Array<Express.Multer.File> from multer
 console.log(urls[0]) // https://yourbucket.s3.region.amazonaws.com/filename
 ```

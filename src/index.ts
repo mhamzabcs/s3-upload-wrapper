@@ -1,22 +1,30 @@
 import { PutObjectCommand, S3Client, S3ClientConfig } from '@aws-sdk/client-s3';
 import { ConfigOptions } from './types';
 
-export async function uploadFiles(config: ConfigOptions, files: Array<Express.Multer.File>) {
-  let data: string[] = [];
+export async function uploadFiles(config: ConfigOptions, files: Express.Multer.File[]) {
+  const data: string[] = [];
   if (!files || !files.length) return Promise.resolve(data);
+  let s3: S3Client;
+  if (!config.credentials) {
+    if (!config.s3Client || !(config.s3Client instanceof S3Client)) {
+      throw new Error('Must provide S3Client or Credentials to initialize one');
+    }
+    s3 = config.s3Client;
+  } else {
+    s3 = new S3Client({
+      region: config.region,
+      credentials: {
+        accessKeyId: config.credentials.access_key,
+        secretAccessKey: config.credentials.secret_key,
+      },
+    });
+  }
 
-  const s3 = new S3Client({
-    region: config.region,
-    credentials: {
-      accessKeyId: config.credentials.access_key,
-      secretAccessKey: config.credentials.secret_key,
-    },
-  });
+  const promiseArr = [];
+  const filenames = [];
 
-  let promiseArr = [],
-    filenames = [];
   for (const file of files) {
-    let filename = generateFileName(files[0].originalname, config.returnOriginalNames);
+    const filename = generateFileName(file.originalname, config.returnOriginalNames);
     filenames.push(filename);
     promiseArr.push(
       s3.send(
@@ -38,7 +46,7 @@ export async function uploadFiles(config: ConfigOptions, files: Array<Express.Mu
 }
 
 function generateFileName(name: string, returnOriginalNames = false): string {
-  return !returnOriginalNames
-    ? `${Math.random().toString(36).substring(2, 7)}${new Date().getTime().toString()}`
-    : name;
+  let randomName = `${Math.random().toString(36).substring(2, 7)}${new Date().getTime().toString()}`;
+  if (name.split('.').length > 1) randomName += `.${name.split('.').at(-1)}`;
+  return !returnOriginalNames ? randomName : name;
 }
