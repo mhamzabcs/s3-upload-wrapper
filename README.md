@@ -30,7 +30,7 @@ let configOptions : ConfigOptions = {
     credentials: {
         access_key: 'bucket access key',
         secret_key: 'bucket secret key'
-    }
+    },
     region: 'bucket region',
     bucketName: 'bucket name',
     returnOriginalNames: true // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
