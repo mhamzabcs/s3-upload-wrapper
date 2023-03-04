@@ -30,7 +30,7 @@ let configOptions : ConfigOptions = {
     credentials: {
         access_key: 'bucket access key',
         secret_key: 'bucket secret key'
-    };
+    }
     region: 'bucket region',
     bucketName: 'bucket name',
     returnOriginalNames: true // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
@@ -55,7 +55,7 @@ let configOptions = {
     region: 'bucket region',
     bucketName: 'bucket name',
     s3Client: s3,
-    returnOriginalNames: true; // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
+    returnOriginalNames: true // Optional, default is false. if true, then uses original file names received from multer while uploading to bucket
 };
 const urls: string[] = await uploadFiles(configOptions, files); // files is Array<Express.Multer.File> from multer
 console.log(urls[0]) // https://yourbucket.s3.region.amazonaws.com/filename
