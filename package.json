@@ -1,6 +1,6 @@
 {
   "name": "s3-upload-wrapper",
-  "version": "1.0.7",
+  "version": "1.0.9",
   "description": "Util to upload s3 files and generate urls",
   "main": "./lib/index.js",
   "scripts": {
